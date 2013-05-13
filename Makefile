@@ -2,6 +2,9 @@
 CC = gcc
 CFLAGS = -g -O2 -Wall
 
+# 库
+LIBDL = -ldl
+
 # 执行文件
 TARGET = tsar
 
@@ -16,7 +19,7 @@ OBJS = $(patsubst %.c,%.o,$(SOURCES))
 
 # 生成执行文件
 $(TARGET):$(OBJS)
-	$(CC) $(OBJS) -o $(TARGET)
+	$(CC) $(OBJS) -o $(TARGET) $(LIBDL)
 	chmod u+x $(TARGET)
 
 # 删除.o文件和执行文件
