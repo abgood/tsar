@@ -18,8 +18,20 @@ struct module {
     int spec;                   /* 启用特殊模块 */
     struct mod_info *info;      /* mod_info结构指针 */
     int n_col;                  /* mod的列数 */
+    char opt_line[LEN_32];      /* 模块opt信息 */
+    char usage[LEN_256];        /* 模块usage信息 */
+    char print_item[LEN_32];    /* 模块打印项 */
+
+    void (*mod_register) (struct module *);     /* 模块管理函数 */
+    void (*data_collect) (struct module *, char *);     /* 模块数据收集 */
+    void (*set_st_record) (struct module *, double *, U_64 *, U_64 *, int);      /* 模块数据设置 */
 };
 
+/* 加载模块 */
 void load_modules(void);
+
+/* 注册模块区域,完善模块相关信息 */
+void register_mod_fileds(struct module *, const char *, const char *,
+        struct mod_info *, int, void *, void *);
 
 #endif

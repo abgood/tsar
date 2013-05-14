@@ -54,6 +54,36 @@ void special_mod(const char *spec_mod) {
     }
 }
 
+/* 设置模块特殊字段 */
+void set_special_field(const char *s) {
+    int i, j;
+    struct module *mod = NULL;
+
+    for (i = 0; i < statis.total_mod_num; i++) {
+        mod = &mods[i];
+        struct mod_info *info = mod->info;
+        for (j = 0; j < mod->n_col; j++) {
+            char *p = info[j].hdr;
+            while (*p == ' ') p++;
+            if (strstr(s, p)) {
+                info[j].summary_bit = SPEC_BIT;
+                mod->spec = 1;
+            }
+        }
+    }
+}
+
+/* 设置模块特殊项 */
+void set_special_item(const char *s) {
+    int i;
+    struct module *mod = NULL;
+
+    for (i = 0; i < statis.total_mod_num; i++) {
+        mod = &mods[i];
+        strcpy(mod->print_item, s);
+    }
+}
+
 /* 解析字符串 */
 void parse_string(char *var) {
     char *token = strtok(NULL, W_SPACE);

@@ -4,6 +4,10 @@ CFLAGS = -g -O2 -Wall
 
 # 库
 LIBDL = -ldl
+DYNAM = -rdynamic		# 动态库动态加载
+
+# 编译子目录
+DIRS = modules
 
 # 执行文件
 TARGET = tsar
@@ -19,9 +23,11 @@ OBJS = $(patsubst %.c,%.o,$(SOURCES))
 
 # 生成执行文件
 $(TARGET):$(OBJS)
-	$(CC) $(OBJS) -o $(TARGET) $(LIBDL)
+	make -C $(DIRS)
+	$(CC) $(OBJS) -o $(TARGET) $(LIBDL) $(DYNAM)
 	chmod u+x $(TARGET)
 
 # 删除.o文件和执行文件
 clean:
 	rm $(OBJS) $(TARGET) -f
+	cd $(DIRS); make clean; cd ..

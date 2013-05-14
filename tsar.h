@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <time.h>
 #include <dlfcn.h>
+#include <getopt.h>
+#include <unistd.h>
 
 #include "define.h"
 #include "config.h"

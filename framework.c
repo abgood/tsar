@@ -8,7 +8,7 @@ void load_modules(void) {
     struct module *mod;
     int (*mod_register)(struct module *);
 
-    sprintf(buff, "modules");
+    sprintf(buff, "/root/code/tsar/modules");
     for (i = 0; i < statis.total_mod_num; i++) {
         mod = &mods[i];
         if (!mod->lib) {
@@ -29,4 +29,15 @@ void load_modules(void) {
             }
         }
     }
+}
+
+/* 注册模块区域,完善模块相关信息 */
+void register_mod_fileds(struct module *mod, const char *opt, const char *usage,
+        struct mod_info *info, int n_col, void *data_collect, void *set_st_record) {
+    sprintf(mod->opt_line, "%s", opt);
+    sprintf(mod->usage, "%s", usage);
+    mod->info = info;
+    mod->n_col = n_col;
+    mod->data_collect = data_collect;
+    mod->set_st_record = set_st_record;
 }

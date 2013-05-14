@@ -11,7 +11,7 @@ all: $(OBJS)
 
 # 生成动态库文件
 $(OBJS): %.so: %.c
-	$(CC) $(OBJS) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 # 删除.so文件
 clean:
