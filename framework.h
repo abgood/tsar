@@ -41,4 +41,7 @@ void collect_record(void);
 /* 设置module收集的信息到mod->record */
 void set_mod_record(struct module *, const char *);
 
+/* 重新加载输出设置模块, 不在mods里则disable此模块 */
+int reload_modules(const char *);
+
 #endif

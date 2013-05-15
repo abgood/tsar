@@ -1,7 +1,14 @@
 #ifndef TSAR_OUTPUT_DB_H
 #define TSAR_OUTPUT_DB_H
 
-/* 输出到db */
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <mysql/mysql.h>
+
 void output_db(void);
+int query_mysql(char *, const char *);
 
 #endif

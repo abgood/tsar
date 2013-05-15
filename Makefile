@@ -4,7 +4,9 @@ CFLAGS = -g -O2 -Wall
 
 # 库
 LIBDL = -ldl
-DYNAM = -rdynamic		# 动态库动态加载
+# 动态库动态加载
+DYNAM = -rdynamic
+LIBMYSQL = `mysql_config --libs`
 
 # 编译子目录
 DIRS = modules
@@ -24,7 +26,7 @@ OBJS = $(patsubst %.c,%.o,$(SOURCES))
 # 生成执行文件
 $(TARGET):$(OBJS)
 	make -C $(DIRS)
-	$(CC) $(OBJS) -o $(TARGET) $(LIBDL) $(DYNAM)
+	$(CC) $(OBJS) -o $(TARGET) $(LIBDL) $(DYNAM) $(LIBMYSQL)
 	chmod u+x $(TARGET)
 
 # 删除.o文件和执行文件

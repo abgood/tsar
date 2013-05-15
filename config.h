@@ -38,6 +38,9 @@ struct configure {
     int print_tail;                     /* 打印尾 */
     int print_nline_interval;           /* 打印间隔行 */
     int print_mode;                     /* 打印模式, 简要or详细 */
+
+    char host_name[LEN_32];             /* 本机主机名 */
+    char host_ip[LEN_32];               /* 本机ip地址 */
 };
 
 /* 解析tsar.conf配置文件 */

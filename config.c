@@ -158,6 +158,32 @@ void get_threshold(void) {
     conf.mod_num++;
 }
 
+/* 获取本机主机名和ip地址 */
+void get_host(void) {
+    struct ifaddrs *if_addr_struct;
+    void *tmp = NULL;
+
+    /* 主机名 */
+    if (gethostname(conf.host_name, sizeof(conf.host_name)) != 0)
+        do_debug(LOG_FATAL, "get host name error!\n");
+
+    /* 主机ip */
+    if (getifaddrs(&if_addr_struct) == -1)
+        do_debug(LOG_FATAL, "get interface address struct error!\n");
+    /* 循环网卡地址, 链表结构 */
+    while (if_addr_struct != NULL) {
+        /* eth0网卡, ipv4 */
+        if (!strcmp(if_addr_struct->ifa_name, "eth0") && (if_addr_struct->ifa_addr->sa_family == AF_INET)) {
+            /* 获取in_addr结构地址 */
+            tmp = &((struct sockaddr_in *)if_addr_struct->ifa_addr)->sin_addr;
+            /* 网络地址转换为字符串 */
+            if (!inet_ntop(if_addr_struct->ifa_addr->sa_family, tmp, conf.host_ip, sizeof(conf.host_ip)))
+                do_debug(LOG_FATAL, "get host ip error!\n");
+        }
+        if_addr_struct = if_addr_struct->ifa_next;
+    }
+}
+
 /* 解析有效行 */
 static int parse_line(char *buff) {
     char *token;
@@ -196,6 +222,8 @@ static int parse_line(char *buff) {
         parse_string(conf.send_nsca_conf);
     else if (!strcmp(token, "threshold"))
         get_threshold();
+    else if (!strlen(conf.host_name) && !strlen(conf.host_ip))
+        get_host();
     else
         return 0;
 

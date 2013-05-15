@@ -63,3 +63,42 @@ void collect_record(void) {
             mod->data_collect(mod, mod->parameter);
     }
 }
+
+/* 循环第一个字串, 是否包含第二个字串, 有则返回1 */
+int is_include_string(const char *mods, const char *mod) {
+    char *token, n_str[LEN_512] = {0};
+
+    /* 第一字串拷到n_str里 */
+    memcpy(n_str, mods, strlen(mods));
+
+    /* 第一字串里的每一项都要与第二字串比较 */
+    token = strtok(n_str, DATA_SPLIT);
+    while (token) {
+        if (!strcmp(token, mod))
+            return 1;
+        token = strtok(NULL, DATA_SPLIT);
+    }
+    return 0;
+}
+
+/* 重新加载输出设置模块
+ *  如果不在mods里, disable此模块
+ */
+int reload_modules(const char *s_mod) {
+    int i;
+    int reload = 0;
+    struct module *mod;
+
+    if (!s_mod || !strlen(s_mod))
+        return reload;
+
+    for (i = 0; i < statis.total_mod_num; i++) {
+        mod = &mods[i];
+        if (is_include_string(s_mod, mod->name) || is_include_string(s_mod, mod->opt_line)) {
+            mod->enable = 1;
+            reload = 1;
+        } else
+            mod->enable = 0;
+    }
+    return reload;
+}
