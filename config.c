@@ -94,17 +94,13 @@ void parse_string(char *var) {
 /* 解析db_mod并追加 */
 void parse_add_string(char *var) {
     char *token = strtok(NULL, W_SPACE);
-    if (!var) {     /* 是否strtok到字符串尾 */
-        if (token)
-            strncpy(var, token, strlen(token));
-    } else {
-        if (token) {
-            strcat(token, ",");
-            strncpy(token, var, strlen(token));
-        }
-        if (token)
-            strncpy(var, token, strlen(token));
+    
+    if (token) {
+        strcat(token, ",");
+        strncat(token, var, strlen(var));
     }
+    if (token)
+        strncpy(var, token, strlen(token));
 }
 
 /* 设置日志等级 */
@@ -273,7 +269,9 @@ void parse_config_file(const char *file_name) {
     if (!(fp = fopen(file_name, "r")))
         do_debug(LOG_FATAL, "Unable open file:%s\n", file_name);
 
-    memset(&conf, '0', sizeof(conf));
+    memset(&conf, '\0', sizeof(conf));
+    memset(&mods, '\0', sizeof(mods));
+    memset(&statis, '\0', sizeof(statis));
     conf.debug_level = LOG_ERR;
     conf.mod_num = 0;
 

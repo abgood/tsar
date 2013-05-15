@@ -11,10 +11,16 @@
 #include <getopt.h>
 #include <unistd.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include "define.h"
 #include "config.h"
 #include "debug.h"
 #include "framework.h"
+#include "output_file.h"
+#include "output_db.h"
+#include "output_nagios.h"
 
 struct statistic {
     int total_mod_num;      /* 启用模块数量 */

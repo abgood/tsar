@@ -41,3 +41,25 @@ void register_mod_fileds(struct module *mod, const char *opt, const char *usage,
     mod->data_collect = data_collect;
     mod->set_st_record = set_st_record;
 }
+
+/* 设置module收集到的信息到mod->record */
+void set_mod_record(struct module *mod, const char *record) {
+    if (record)
+        sprintf(mod->record, "%s", record);
+}
+
+/* tsar运行开始先收集数据再输出 */
+void collect_record(void) {
+    int i;
+    struct module *mod = NULL;
+
+    for (i = 0; i < statis.total_mod_num; i++) {
+        mod = &mods[i];
+        if (!mod->enable)
+            continue;
+
+        memset(mod->record, 0, sizeof(mod->record));
+        if (mod->data_collect)
+            mod->data_collect(mod, mod->parameter);
+    }
+}

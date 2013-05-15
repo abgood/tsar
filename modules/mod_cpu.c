@@ -41,8 +41,39 @@ static void read_cpu_stats(struct module *mod) {
     if (!(fp = fopen(STAT, "r")))
         return;
     while (fgets(line, LEN_4096, fp)) {
-        printf("%s", line);
+        /* line是以"cpu "开头的 */
+        if (!strncmp(line, "cpu ", 4)) {
+            sscanf(line + 5, "%llu %llu %llu %llu %llu %llu %llu %llu %llu",
+                    &st_cpu.cpu_user,
+                    &st_cpu.cpu_nice,
+                    &st_cpu.cpu_sys,
+                    &st_cpu.cpu_idle,
+                    &st_cpu.cpu_iowait,
+                    &st_cpu.cpu_hardirq,
+                    &st_cpu.cpu_softirq,
+                    &st_cpu.cpu_steal,
+                    &st_cpu.cpu_guest);
+        }
     }
+    /* cpu_util = st_cpu.cpu_user + st_cpu.cpu_sys + st_cpu.cpu_hardirq + st_cpu.cpu_softirq */
+
+    int pos = sprintf(buf, "%llu,%llu,%llu,%llu,%llu,%llu,%llu,%llu,%llu",
+            /* the store order is not same as read procedure */
+            st_cpu.cpu_user,
+            st_cpu.cpu_sys,
+            st_cpu.cpu_iowait,
+            st_cpu.cpu_hardirq,
+            st_cpu.cpu_softirq,
+            st_cpu.cpu_idle,
+            st_cpu.cpu_nice,
+            st_cpu.cpu_steal,
+            st_cpu.cpu_guest);
+
+    buf[pos] = '\0';
+    /* 设置module收集到的记录 */
+    set_mod_record(mod, buf);
+    if (fclose(fp) < 0)
+        return;
 }
 
 /* 设置cpu信息到st_array中 */

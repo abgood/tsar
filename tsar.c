@@ -106,7 +106,7 @@ static void main_init(int argc, char **argv) {
             case 'm':       /* 模块内多项目合并模式 */
                 conf.print_merge = MERGE_ITEM;
                 break;
-            case 'D':
+            case 'D':       /* conver data to K/M/G */
                 conf.print_detail = TRUE;
                 break;
             case 'h':       /* tsar帮助 */
@@ -114,7 +114,7 @@ static void main_init(int argc, char **argv) {
             case ':':       /* 选项后缺少参数 */
                 printf("must have parameter\n");
                 usage();
-            case '?':       /* 未定义选项 */
+            case '?':       /* 命令行未定义选项参数 */
                 if (argv[oind] && strstr(argv[oind], "--")) {
                     strcat(conf.output_print_mod, argv[oind]);
                     strcat(conf.output_print_mod, DATA_SPLIT);
@@ -154,6 +154,37 @@ static void main_init(int argc, char **argv) {
         do_debug(LOG_FATAL, "main_init: can't find tsar.conf\n");
 }
 
+/* 显示启用模块列表 */
+void running_list(void) {
+    int i;
+    struct module *mod;
+
+    printf("tsar enable follow modules:\n");
+
+    for (i = 0; i < statis.total_mod_num; i++) {
+        mod = &mods[i];
+        printf("\t%s\n", mod->name + 4);
+    }
+}
+
+/* 计划任务运行 */
+void running_cron(void) {
+    /* 调用模块,收集记录 */
+    collect_record();
+
+    /* 输出到file */
+    if (strstr(conf.output_interface, "file"))
+        output_file();
+
+    /* 输出到db */
+    if (strstr(conf.output_interface, "db"))
+        output_db();
+
+    /* 输出到nagios */
+    if (strstr(conf.output_interface, "nagios"))
+        output_nagios();
+}
+
 int main (int argc, char **argv) {
     /* 解析tsar配置文件 */
     parse_config_file(DEFAULT_CONF_FILE);
@@ -169,6 +200,17 @@ int main (int argc, char **argv) {
 
     /* 解析参数 */
     main_init(argc, argv);
+
+    /* 开始执行 */
+    switch (conf.running_mode) {
+        case RUN_LIST:          /* -L */
+            running_list();
+            break;
+        case RUN_CRON:          /* -c */
+            conf.print_mode = DATA_DETAIL;
+            running_cron();
+            break;
+    }
 
     return 0;
 }

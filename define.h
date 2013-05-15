@@ -28,6 +28,7 @@
 #define ITEM_SPLIT ";"      /* 模块内项目分割符 */
 #define W_SPACE " \t\r\n"   /* tsar配置文件分割符 */
 #define DATA_SPLIT ","      /* argv中要打印模块分隔符 */
+#define STRING_SPLIT ":"    /* module中项的opt_line与record的分隔符, 项的标注与记录分隔符 */
 
 /* 最大限制数 */
 #define MAX_COL_NUM 64  /* 模块最大列数 */

@@ -21,6 +21,7 @@ struct module {
     char opt_line[LEN_32];      /* 模块opt信息 */
     char usage[LEN_256];        /* 模块usage信息 */
     char print_item[LEN_32];    /* 模块打印项 */
+    char record[LEN_4096];      /* 模块收集到的信息 */
 
     void (*mod_register) (struct module *);     /* 模块管理函数 */
     void (*data_collect) (struct module *, char *);     /* 模块数据收集 */
@@ -33,5 +34,11 @@ void load_modules(void);
 /* 注册模块区域,完善模块相关信息 */
 void register_mod_fileds(struct module *, const char *, const char *,
         struct mod_info *, int, void *, void *);
+
+/* tsar运行开始先收集数据再输出 */
+void collect_record(void);
+
+/* 设置module收集的信息到mod->record */
+void set_mod_record(struct module *, const char *);
 
 #endif
