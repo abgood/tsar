@@ -12,6 +12,8 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <ifaddrs.h>
+#include <mntent.h>
+#include <ctype.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -19,6 +21,7 @@
 #include "define.h"
 #include "config.h"
 #include "debug.h"
+#include "common.h"
 #include "framework.h"
 #include "output_file.h"
 #include "output_db.h"

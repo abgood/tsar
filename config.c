@@ -125,7 +125,7 @@ void set_debug_level(void) {
 /* 解析整型 */
 void parse_int(int *var) {
     char *token = strtok(NULL, W_SPACE);
-    if (!token)
+    if (token == NULL)
         do_debug(LOG_FATAL, "Bungled line\n");
     *var = strtol(token, NULL, 0);
 }
@@ -198,6 +198,8 @@ static int parse_line(char *buff) {
         parse_string(conf.output_interface);
     else if (!strcmp(token, "output_file_path"))
         parse_string(conf.output_file_path);
+    else if (!strcmp(token, "module_path"))
+        parse_string(conf.module_path);
     else if (!strcmp(token, "output_db_addr"))
         parse_string(conf.output_db_addr);
     else if (!strcmp(token, "output_db_mod"))
@@ -297,9 +299,12 @@ void parse_config_file(const char *file_name) {
     if (!(fp = fopen(file_name, "r")))
         do_debug(LOG_FATAL, "Unable open file:%s\n", file_name);
 
+    /* 结构初始化 */
     memset(&conf, '\0', sizeof(conf));
     memset(&mods, '\0', sizeof(mods));
     memset(&statis, '\0', sizeof(statis));
+    /* cycle_time,server_port配置内存空间 */
+    conf.cycle_time = (int *)malloc(sizeof(int));
     conf.debug_level = LOG_ERR;
     conf.mod_num = 0;
 

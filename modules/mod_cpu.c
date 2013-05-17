@@ -79,7 +79,34 @@ static void read_cpu_stats(struct module *mod) {
 /* 设置cpu信息到st_array中 */
 static void set_cpu_record(struct module *mod, double st_array[],
         U_64 pre_array[], U_64 cur_array[], int inter) {
-    ;
+    int i, j;
+    U_64 pre_total, cur_total;
+    pre_total = cur_total = 0;
+
+    for (i = 0; i < mod->n_col; i++) {
+        /* 新数据的每项要大于历史数据 */
+        if (cur_array[i] < pre_array[i]) {
+            for (j = 0; j < 9; j++)
+                st_array[j] = -1;
+            return;
+        }
+        pre_total += pre_array[i];      /* 历史数据的所有项和 */
+        cur_total += cur_array[i];      /* 当前数据的所有项和 */
+    }
+
+    /* 再一次确认新数据要大于历史数据 */
+    if (cur_total <= pre_total)
+        return;
+
+    /* 求出st_array的记录 */
+    for (i = 0; i < 9; i++) {
+        /* 第5位为SUMMARY_BIT, 即简要位,平均值 */
+        if ((i != 5) && (cur_array[i] >= pre_array[i]))
+            st_array[i] = (cur_array[i] - pre_array[i]) * 100.0 / (cur_total - pre_total);
+    }
+
+    /* util = user + sys + hirq + sirq + nice */
+    st_array[5] = st_array[0] + st_array[1] + st_array[3] + st_array[4] + st_array[6];
 }
 
 void mod_register(struct module *mod) {

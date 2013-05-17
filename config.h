@@ -6,6 +6,7 @@
 struct configure {
     int debug_level;                    /* 日志级别 */
     char config_file[LEN_128];          /* tsar配置文件默认路径 */
+    char module_path[LEN_128];          /* tsar模块文件默认路径 */
 
     char output_interface[LEN_128];     /* 日志保存形式 */
     char output_file_path[LEN_128];     /* 日志保存文件路径 */
@@ -35,9 +36,9 @@ struct configure {
     int print_interval;                 /* 打印间隔秒 */
     int print_merge;                    /* 模块内的多项目合并模式 */
     int print_detail;                   /* 打印详细信息 */
-    int print_tail;                     /* 打印尾 */
     int print_nline_interval;           /* 打印间隔行 */
     int print_mode;                     /* 打印模式, 简要or详细 */
+    int print_tail;                     /* 打印尾部最大值, 中间值, 最小值 */
 
     char host_name[LEN_32];             /* 本机主机名 */
     char host_ip[LEN_32];               /* 本机ip地址 */

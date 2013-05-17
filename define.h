@@ -15,7 +15,7 @@
 
 /* 长度 */
 #define LEN_32 32
-#define LEN_56 64
+#define LEN_64 64
 #define LEN_128 128
 #define LEN_256 256
 #define LEN_512 512
@@ -29,6 +29,7 @@
 #define W_SPACE " \t\r\n"   /* tsar配置文件分割符 */
 #define DATA_SPLIT ","      /* argv中要打印模块分隔符 */
 #define STRING_SPLIT ":"    /* module中项的opt_line与record的分隔符, 项的标注与记录分隔符 */
+#define ITEM_SPSTART "="    /* 模块每个项的记录开始符 */
 
 /* 最大限制数 */
 #define MAX_COL_NUM 64  /* 模块最大列数 */
@@ -74,6 +75,13 @@ enum {
     DATA_SUMMARY,       /* 简要 */
     DATA_DETAIL,        /* 详细 */
     DATA_ALL            /* 所有 */
+};
+
+/* 模块信息处理方式 */
+enum {
+    MERGE_NULL,         /* 无模式 */
+    MERGE_SUM,          /* 记录和 */
+    MERGE_AVG           /* 记录平均值 */
 };
 
 #endif

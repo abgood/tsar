@@ -32,6 +32,9 @@ void output_db(void) {
     field[strlen(field) - 1] = '\0';
     value[strlen(value) - 1] = '\0';
 
+    printf("%s\n", field);
+    printf("%s\n", value);
+
     /* 组合mysql语句 */
     sprintf(cmd, "INSERT INTO data_collect(%s) values (%s)", field, value);
     sql = cmd;
