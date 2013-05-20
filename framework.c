@@ -198,10 +198,11 @@ void realloc_module_array(struct module *mod, int n_n_item) {
 
 /* 把cur_array与pre_array设置到st_array */
 void set_st_record(struct module *mod) {
-    int i;
-    struct mod_info *info = mod->info;
+    int i, j, k = 0;
+    // struct mod_info *info = mod->info;
     mod->st_flag = 1;
 
+    /* 模块每项 */
     for (i = 0; i < mod->n_item; i++) {
         /* 模块自己进行数据处理并保存至st_array */
         if (mod->set_st_record) {
@@ -211,7 +212,24 @@ void set_st_record(struct module *mod) {
                     &mod->cur_array[i * mod->n_col],
                     conf.print_interval);
         }
+
+        /* 模块每列 */
+        for (j = 0; j < mod->n_col; j++) {
+            /* 没有set record */
+            if (!mod->set_st_record) {
+                printf("have not set_st_record\n");
+            }
+
+            /* 打印每列的尾部 */
+            if (conf.print_tail) {
+                printf("print tail\n");
+            }
+
+            k++;
+        }
     }
+
+    mod->n_record++;
 }
 
 /* 通过mod->record得出st_array内的数据 */
@@ -244,7 +262,7 @@ int collect_record_stat(void) {
 
             /* 多项目为真 */
             if (strstr(mod->record, ITEM_SPLIT)) {
-                conf.print_merge = MERGE_NOT;
+                // conf.print_merge = MERGE_NOT;
                 /* 合并模式 */
                 if (MERGE_ITEM == conf.print_merge) {
                     mod->n_item = 1;

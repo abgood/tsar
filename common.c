@@ -121,7 +121,7 @@ int convert_record_to_array(U_64 *array, int l_array, const char *record) {
     token = strtok(n_str, DATA_SPLIT);
     while (token) {
         /* 是数字且i < 列数 - 1, 要保存数组下标从0开始 */
-        if (is_digit(token) && i < l_array - 1)
+        if (is_digit(token) && i < l_array)
             array[i++] = strtoull(token, NULL, 10);
         else
             return i;
@@ -171,8 +171,7 @@ int merge_one_string(U_64 *array, int l_array, char *string, struct module *mod,
                 break;
             /* 求平均值 */
             case MERGE_AVG:
-                // array[i] = ()
-                printf("merge_avg\n");
+                array[i] = (array[i] * (n_item - 1) + array_2[i]) / n_item;
                 break;
             default:
                 break;

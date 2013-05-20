@@ -86,19 +86,15 @@ void read_partition_stat(struct module *mod) {
 
 /* 设置收集到的硬盘信息到st_array中 */
 static void set_part_record(struct module *mod, double st_array[], U_64 pre_array[], U_64 cur_array[], int inter) {
-    int i;
-    for (i = 0; i < mod->n_col; i++)
-        printf("%llu ", cur_array[i]);
-    printf("\n");
-    //st_array[0] = cur_array[3] * cur_array[0];                      /* 非超级用户可获取的总的块大小 */
-    //st_array[1] = (cur_array[2] - cur_array[1]) * cur_array[0];     /* 已经被用的总的块大小 */
-    //st_array[2] = cur_array[2] * cur_array[0];                      /* 总的块大小 */
+    st_array[0] = cur_array[3] * cur_array[0];                      /* 非超级用户可获取的总的块大小 */
+    st_array[1] = (cur_array[2] - cur_array[1]) * cur_array[0];     /* 已经被用的总的块大小 */
+    st_array[2] = cur_array[2] * cur_array[0];                      /* 总的块大小 */
 
-    //U_64 used = cur_array[2] - cur_array[1];        /* 被用块数 */
-    //U_64 nonroot_total = cur_array[2] - cur_array[1] + cur_array[3];    /* root不能使用的总块数 */
+    U_64 used = cur_array[2] - cur_array[1];        /* 被用块数 */
+    U_64 nonroot_total = cur_array[2] - cur_array[1] + cur_array[3];    /* root不能使用的总块数 */
 
-    //if (nonroot_total != 0)
-    //    st_array[3] = (used * 100.0) / nonroot_total + ((used * 100) % nonroot_total != 0);
+    if (nonroot_total != 0)
+        st_array[3] = (used * 100.0) / nonroot_total + ((used * 100) % nonroot_total != 0);
 
 }
 

@@ -23,6 +23,7 @@ struct module {
     int spec;                   /* 启用特殊模块 */
     int n_col;                  /* mod的列数 */
     int n_item;                 /* 模块项目数 */
+    long n_record;              /* 模块设置记录数 */
 
     U_64 *pre_array;            /* 以前记录信息内存空间 */
     U_64 *cur_array;            /* 当前记录信息内存空间 */

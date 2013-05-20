@@ -139,18 +139,22 @@ void get_threshold(void) {
         do_debug(LOG_FATAL, "Too many mod threshold\n");
 
     sscanf(token, "%[^;];%[.N0-9];%[.N0-9];%[.N0-9];%[.N0-9];", conf.check_name[conf.mod_num], tmp[0], tmp[1], tmp[2], tmp[3]);
+    /* Warnning最小值 */
     if (!strcmp(tmp[0], "N"))
         conf.wmin[conf.mod_num] = 0;
     else
         conf.wmin[conf.mod_num] = atof(tmp[0]);
+    /* Warnning最大值 */
     if (!strcmp(tmp[1], "N"))
         conf.wmax[conf.mod_num] = 0;
     else
         conf.wmax[conf.mod_num] = atof(tmp[1]);
+    /* Critical最小值 */
     if (!strcmp(tmp[2], "N"))
         conf.cmin[conf.mod_num] = 0;
     else
         conf.cmin[conf.mod_num] = atof(tmp[2]);
+    /* Critical最大值 */
     if (!strcmp(tmp[3], "N"))
         conf.cmax[conf.mod_num] = 0;
     else
@@ -305,6 +309,7 @@ void parse_config_file(const char *file_name) {
     memset(&statis, '\0', sizeof(statis));
     /* cycle_time,server_port配置内存空间 */
     conf.cycle_time = (int *)malloc(sizeof(int));
+    conf.server_port = (int *)malloc(sizeof(int));
     conf.debug_level = LOG_ERR;
     conf.mod_num = 0;
 
