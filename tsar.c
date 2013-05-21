@@ -22,8 +22,8 @@ const struct option longopts[] = {
     { "detail", no_argument, NULL, 'D' },
     { "spec", required_argument, NULL, 's' },
     { "item", required_argument, NULL, 'I' },
-    { "encrypt", required_argument, NULL, 'e' },
-    { "decrypt", required_argument, NULL, 'j' },
+    { "encry", required_argument, NULL, 'e' },
+    { "decry", required_argument, NULL, 'j' },
     { "help", no_argument, NULL, 'h' },
     { 0, 0, 0, 0},
 };
@@ -48,6 +48,8 @@ void usage(void) {
             "    --detail/-D    do not conver data to K/M/G\n"
             "    --spec/-s      show spec field data, tsar --cpu -s sys,util\n"
             "    --item/-I      show spec item data, tsar --io -I sda\n"
+            "    --encry/-e     encrypt the string, tsar -e <string> \n"
+            "    --decry/-j     decrypt the string, tsar -j <string> \n"
             "    --help/-h      help\n");
 
     fprintf(stderr,
