@@ -22,6 +22,8 @@ const struct option longopts[] = {
     { "detail", no_argument, NULL, 'D' },
     { "spec", required_argument, NULL, 's' },
     { "item", required_argument, NULL, 'I' },
+    { "encrypt", required_argument, NULL, 'e' },
+    { "decrypt", required_argument, NULL, 'j' },
     { "help", no_argument, NULL, 'h' },
     { 0, 0, 0, 0},
 };
@@ -67,7 +69,7 @@ void usage(void) {
 static void main_init(int argc, char **argv) {
     int opt, oind = 0;
 
-    while ((opt = getopt_long(argc, argv, ":cCi:Llf:n:d:s:I:mhD", longopts, NULL)) != -1) {
+    while ((opt = getopt_long(argc, argv, ":cCi:Llf:n:d:s:I:e:j:mhD", longopts, NULL)) != -1) {
         oind++;
         switch (opt) {
             case 'c':       /* 计划任务 */
@@ -108,6 +110,12 @@ static void main_init(int argc, char **argv) {
                 break;
             case 'D':       /* conver data to K/M/G */
                 conf.print_detail = TRUE;
+                break;
+            case 'e':       /* 加密字符串 */
+                enc_code(optarg);
+                break;
+            case 'j':       /* 解密字符串 */
+                dec_code(optarg, 1);
                 break;
             case 'h':       /* tsar帮助 */
                 usage();

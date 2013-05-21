@@ -11,6 +11,7 @@ struct configure {
     char output_interface[LEN_128];     /* 日志保存形式 */
     char output_file_path[LEN_128];     /* 日志保存文件路径 */
     char output_db_addr[LEN_512];       /* 日志DB地址 */
+    char output_db_pawd[LEN_32];        /* 日志DB密码 */
     char output_db_mod[LEN_512];        /* 输出到DB中的模块 */
     char output_nagios_mod[LEN_512];    /* 输出到nagios中的模块 */
     char output_stdio_mod[LEN_512];     /* 输出到stdio中的模块 */

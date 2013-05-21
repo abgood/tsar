@@ -5,6 +5,7 @@ int query_mysql(char *db_addr, const char *sql) {
     const char *ip;
     int port;
     MYSQL mysql, *conn;
+    const char *db_pawd;
 
     // 取得ip和端口
     ip = strtok(db_addr, ":");
@@ -13,8 +14,11 @@ int query_mysql(char *db_addr, const char *sql) {
     // 初始mysql结构
     mysql_init(&mysql);
 
+    // 解密DB密码
+    db_pawd = dec_code(conf.output_db_pawd, 0);
+
     // 连接mysql
-    if ((conn = mysql_real_connect(&mysql, ip, "root", "123456", "tsar", port, NULL, 0)) == NULL) {
+    if ((conn = mysql_real_connect(&mysql, ip, "root", db_pawd, "tsar", port, NULL, 0)) == NULL) {
         if (mysql_error(&mysql))
             fprintf(stderr, "connection error %d : %s\n", mysql_errno(&mysql), mysql_error(&mysql));
         do_debug(LOG_ERR, "Fail to connect mysql, ip:%s\tport:%d\n", ip, port);

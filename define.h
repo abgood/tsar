@@ -14,6 +14,8 @@
 #define FALSE 0
 
 /* 长度 */
+#define LEN_8 8
+#define LEN_16 16
 #define LEN_32 32
 #define LEN_64 64
 #define LEN_128 128

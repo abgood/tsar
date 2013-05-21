@@ -14,6 +14,7 @@
 #include <ifaddrs.h>
 #include <mntent.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -26,6 +27,7 @@
 #include "output_file.h"
 #include "output_db.h"
 #include "output_nagios.h"
+#include "enc_dec.h"
 
 struct statistic {
     int total_mod_num;      /* 启用模块数量 */
