@@ -27,6 +27,7 @@
 #include "output_file.h"
 #include "output_db.h"
 #include "output_nagios.h"
+#include "output_print.h"
 #include "enc_dec.h"
 
 struct statistic {

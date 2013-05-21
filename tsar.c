@@ -152,7 +152,7 @@ static void main_init(int argc, char **argv) {
         conf.print_nline_interval = conf.print_interval;    /* 打印间隔行 */
     }
 
-    /* 打印模式, 简要or详细 */
+    /* 打印模式, 简要or详细, 没有无效--项 */
     if (!strlen(conf.output_print_mod))
         conf.print_mode = DATA_SUMMARY;
     else
@@ -219,6 +219,14 @@ int main (int argc, char **argv) {
         case RUN_CRON:          /* -c */
             conf.print_mode = DATA_DETAIL;
             running_cron();
+            break;
+        case RUN_CHECK_NEW:     /* -C */
+            if (reload_modules(conf.output_print_mod))
+                conf.print_mode = DATA_DETAIL;
+            /* 取消列数为0的模块 */
+            disable_col_zero();
+            /* 检查信息 */
+            running_check(RUN_CHECK_NEW);
             break;
     }
 

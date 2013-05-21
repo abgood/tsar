@@ -67,4 +67,7 @@ void init_module_fields(void);
 /* 通过mod->record得出st_array内的数据 */
 int collect_record_stat(void);
 
+/* 取消列数为0的模块 */
+void disable_col_zero(void);
+
 #endif

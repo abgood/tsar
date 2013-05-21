@@ -315,3 +315,35 @@ int collect_record_stat(void) {
 
     return no_p_hdr;
 }
+
+/* 取消列数为0的模块 */
+void disable_col_zero(void) {
+    int i, j;
+    struct module *mod;
+
+    for (i = 0; i < statis.total_mod_num; i++) {
+        mod = &mods[i];
+        if (!mod->enable)
+            continue;
+
+        if (!mod->n_col)
+            mod->enable = 0;
+        else {
+            int p_col = 0;
+            struct mod_info *info = mod->info;
+            
+            for (j = 0; j < mod->n_col; j++) {
+                /* 匹配项 */
+                if (((DATA_SUMMARY == conf.print_mode) && (SUMMARY_BIT == info[j].summary_bit))
+                        || ((DATA_DETAIL == conf.print_mode) && (HIDE_BIT != info[j].summary_bit))) {
+                    p_col++;
+                    break;
+                }
+            }
+
+            /* 未匹配到项 */
+            if (!p_col)
+                mod->enable = 0;
+        }
+    }
+}

@@ -15,7 +15,7 @@ struct configure {
     char output_db_mod[LEN_512];        /* 输出到DB中的模块 */
     char output_nagios_mod[LEN_512];    /* 输出到nagios中的模块 */
     char output_stdio_mod[LEN_512];     /* 输出到stdio中的模块 */
-    char output_print_mod[LEN_512];     /* argv中要打印的模块 */
+    char output_print_mod[LEN_512];     /* --check后的argv中要打印的模块 */
 
     char server_addr[LEN_512];          /* nagios服务器ip地址 */
     int *server_port;                   /* nagios服务器端口 */
