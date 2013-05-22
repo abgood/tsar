@@ -32,6 +32,7 @@
 #define DATA_SPLIT ","      /* argv中要打印模块分隔符 */
 #define STRING_SPLIT ":"    /* module中项的opt_line与record的分隔符, 项的标注与记录分隔符 */
 #define ITEM_SPSTART "="    /* 模块每个项的记录开始符 */
+#define PRINT_SEC_SPLIT " " /* 每个hdr之间的分隔符 */
 
 /* 最大限制数 */
 #define MAX_COL_NUM 64  /* 模块最大列数 */

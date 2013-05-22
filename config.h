@@ -41,6 +41,10 @@ struct configure {
     int print_mode;                     /* 打印模式, 简要or详细 */
     int print_tail;                     /* 打印尾部最大值, 中间值, 最小值 */
 
+    int print_file_number;              /* tsar.data.x 文件将会被读 */
+    int print_start_time;               /* 打印开始时间 */
+    int print_end_time;                 /* 打印结束时间 */
+
     char host_name[LEN_32];             /* 本机主机名 */
     char host_ip[LEN_32];               /* 本机ip地址 */
 };

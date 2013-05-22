@@ -230,6 +230,17 @@ int main (int argc, char **argv) {
             /* 检查信息 */
             running_check(RUN_CHECK_NEW);
             break;
+        case RUN_PRINT:         /* no para */
+            /* reload module by output_stdio_mod and output_print_mod */
+            reload_modules(conf.output_stdio_mod);
+            reload_modules(conf.output_print_mod);
+            /* disable module when n_col is zero */
+            disable_col_zero();
+            /* 省略多少行不打 */
+            conf.print_nline_interval = conf.print_interval;
+            /* show log file info */
+            running_print();
+            break;
     }
 
     return 0;

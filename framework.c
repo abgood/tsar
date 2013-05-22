@@ -341,8 +341,7 @@ void disable_col_zero(void) {
             
             for (j = 0; j < mod->n_col; j++) {
                 /* 匹配项 */
-                // if (((DATA_SUMMARY == conf.print_mode) && (SUMMARY_BIT == info[j].summary_bit))
-                if (((DATA_SUMMARY == conf.print_mode) && (HIDE_BIT != info[j].summary_bit))
+                if (((DATA_SUMMARY == conf.print_mode) && (SUMMARY_BIT == info[j].summary_bit))
                         || ((DATA_DETAIL == conf.print_mode) && (HIDE_BIT != info[j].summary_bit))) {
                     p_col++;
                     break;
