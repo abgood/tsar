@@ -223,7 +223,9 @@ int main (int argc, char **argv) {
         case RUN_CHECK_NEW:     /* -C */
             if (reload_modules(conf.output_print_mod))
                 conf.print_mode = DATA_DETAIL;
-            /* 取消列数为0的模块 */
+            /* 取消列数为0的模块
+             * 没有DETAIL_BIT状态, 此函数无用
+             */
             disable_col_zero();
             /* 检查信息 */
             running_check(RUN_CHECK_NEW);

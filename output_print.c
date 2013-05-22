@@ -1,11 +1,24 @@
 #include "tsar.h"
 
+/* 去除空格 */
+char *trim(char *src, int max_len) {
+    int cur_len = 0;
+    char *index = src;
+
+    while (*index == ' ' && cur_len < max_len) {
+        index++;
+        cur_len++;
+    }
+    return index;
+}
+
 /* 检查信息 */
 void running_check(int check_type) {
     char filename[LEN_128] = {0};
     FILE *fp;
     int total_num = 0;
     char line[2][LEN_10240];
+    double *st_array;
 
     sprintf(filename, "%s", conf.output_file_path);
 
@@ -115,6 +128,7 @@ void running_check(int check_type) {
         struct module *mod;
         printf("%s\ttsar\t", conf.host_name);
 
+        /* each module */
         for (i = 0; i < statis.total_mod_num; i++) {
             mod = &mods[i];
             if (!mod->enable) {
@@ -133,25 +147,58 @@ void running_check(int check_type) {
             char *token = strtok(n_record, ITEM_SPLIT);
             char *s_token;
 
-            /* 每项 */
+            /* each item */
             for (j = 0; j < mod->n_item; j++) {
                 if (token) {
-                }
-                /* 每列 */
-                for (k = 0; k < mod->n_col; k++) {
-                    if (mod->spec) {
-                    } else {
+                    s_token = strstr(token, ITEM_SPSTART);
+                    if (s_token) {
+                        memset(opt, 0, LEN_128);
+                        strncat(opt, token, s_token - token);
+                        strcat(opt, ":");
                     }
                 }
 
+                st_array = &mod->st_array[j * mod->n_col];
+                /* each col */
+                for (k = 0; k < mod->n_col; k++) {
+                    /* spec_xxx write in tsar.conf */
+                    if (mod->spec) {
+                        /* no data and no flag */
+                        if (!st_array && !mod->st_flag) {
+                            printf("No data\n");
+                        } else {
+                            if (((DATA_SUMMARY == conf.print_mode) && (SPEC_BIT == info[k].summary_bit)) 
+                                    || ((DATA_DETAIL == conf.print_mode) && (SPEC_BIT == info[k].summary_bit))) {
+                                printf("%s:%s%s=", mod_name, opt, trim(info[k].hdr, LEN_128));
+                                printf("%0.1f ", st_array[k]);
+                            }
+                        }
+                    } else {
+                        /* no data and no flag */
+                        if (!st_array && !mod->st_flag) {
+                            printf("No data\n");
+                        } else {
+                            if (((DATA_SUMMARY == conf.print_mode) && (SUMMARY_BIT == info[k].summary_bit)) 
+                                    || ((DATA_DETAIL == conf.print_mode) && (HIDE_BIT != info[k].summary_bit))) {
+                                printf("%s:%s%s=", mod_name, opt, trim(info[k].hdr, LEN_128));
+                                printf("%0.1f ", st_array[k]);
+                            }
+                        }
+                    }
+                }
+
+                /* next item for module */
                 if (token) {
+                    token = strtok(NULL, ITEM_SPLIT);
                 }
             }
 
+            /* free mem */
             if (n_record) {
+                free(n_record);
+                n_record = NULL;
             }
         }
-
         printf("\n");
         if (fclose(fp) < 0) {
             do_debug(LOG_FATAL, "fclose error: %s", strerror(errno));

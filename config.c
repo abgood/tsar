@@ -196,14 +196,14 @@ static int parse_line(char *buff) {
         (void) 0;
     else if (strstr(buff, "mod_"))
         parse_mod(token);
+    else if (!strcmp(token, "module_path"))
+        parse_string(conf.module_path);
     else if (strstr(buff, "spec_"))
         special_mod(token);
     else if (!strcmp(token, "output_interface"))
         parse_string(conf.output_interface);
     else if (!strcmp(token, "output_file_path"))
         parse_string(conf.output_file_path);
-    else if (!strcmp(token, "module_path"))
-        parse_string(conf.module_path);
     else if (!strcmp(token, "output_db_addr"))
         parse_string(conf.output_db_addr);
     else if (!strcmp(token, "output_db_pawd"))

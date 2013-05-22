@@ -9,7 +9,8 @@ struct mod_info part_info[] = {
     {" bfree", DETAIL_BIT,  MERGE_SUM,  STATS_NULL},
     {" bused", DETAIL_BIT,  MERGE_SUM,  STATS_NULL},
     {" btotl", DETAIL_BIT,  MERGE_SUM,  STATS_NULL},
-    {"  util", DETAIL_BIT, MERGE_AVG,  STATS_NULL},
+    {"  util", SUMMARY_BIT, MERGE_AVG,  STATS_NULL},
+    // {"  util", DETAIL_BIT, MERGE_AVG,  STATS_NULL},
 };
 
 #define MAXPART 20

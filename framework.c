@@ -8,7 +8,12 @@ void load_modules(void) {
     struct module *mod;
     int (*mod_register)(struct module *);
 
-    sprintf(buff, conf.module_path);
+    /* in config.h conf.module_path no data */
+    if (strlen(conf.module_path) == 0) {
+        sprintf(buff, "/root/code/tsar/modules");
+    } else {
+        sprintf(buff, conf.module_path);
+    }
     for (i = 0; i < statis.total_mod_num; i++) {
         mod = &mods[i];
         if (!mod->lib) {
@@ -316,7 +321,9 @@ int collect_record_stat(void) {
     return no_p_hdr;
 }
 
-/* 取消列数为0的模块 */
+/* 取消列数为0的模块
+ * 没有DETAIL_BIT状态, 此函数无用
+ */ 
 void disable_col_zero(void) {
     int i, j;
     struct module *mod;
@@ -334,7 +341,8 @@ void disable_col_zero(void) {
             
             for (j = 0; j < mod->n_col; j++) {
                 /* 匹配项 */
-                if (((DATA_SUMMARY == conf.print_mode) && (SUMMARY_BIT == info[j].summary_bit))
+                // if (((DATA_SUMMARY == conf.print_mode) && (SUMMARY_BIT == info[j].summary_bit))
+                if (((DATA_SUMMARY == conf.print_mode) && (HIDE_BIT != info[j].summary_bit))
                         || ((DATA_DETAIL == conf.print_mode) && (HIDE_BIT != info[j].summary_bit))) {
                     p_col++;
                     break;
