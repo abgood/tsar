@@ -227,7 +227,22 @@ void set_st_record(struct module *mod) {
 
             /* 打印每列的尾部 */
             if (conf.print_tail) {
-                printf("print tail\n");
+                if (0 == mod->n_record) {
+                    mod->max_array[k] = mod->mean_array[k] = mod->min_array[k] = mod->st_array[k] * 1.0;
+                } else {
+                    printf("%f\n", mod->mean_array[k]);
+                    /* bigger than max */
+                    if (mod->st_array[k] - mod->max_array[k] > 0.1) {
+                        mod->max_array[k] = mod->st_array[k];
+                    }
+                    /* letter than min */
+                    if (mod->min_array[k] - mod->st_array[k] > 0.1 && mod->st_array[k] >= 0) {
+                        mod->min_array[k] = mod->st_array[k];
+                    }
+                    if (mod->st_array[k] >= 0) {
+                        mod->mean_array[k] = ((mod->n_record - 1) * mod->mean_array[k] + mod->st_array[k]) / mod->n_record;
+                    }
+                }
             }
 
             k++;

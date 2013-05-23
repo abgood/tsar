@@ -32,7 +32,8 @@
 #define DATA_SPLIT ","      /* argv中要打印模块分隔符 */
 #define STRING_SPLIT ":"    /* module中项的opt_line与record的分隔符, 项的标注与记录分隔符 */
 #define ITEM_SPSTART "="    /* 模块每个项的记录开始符 */
-#define PRINT_SEC_SPLIT " " /* 每个hdr之间的分隔符 */
+#define PRINT_SEC_SPLIT " " /* 时间与hdr之间的分隔符 */
+#define PRINT_DATA_SPLIT "  " /* 每个hdr之间的分隔符 */
 
 /* 最大限制数 */
 #define MAX_COL_NUM 64  /* 模块最大列数 */
@@ -40,6 +41,7 @@
 
 /* 默认打印值 */
 #define DEFAULT_PRINT_INTERVAL 5        /* 默认打印间隔秒 */
+#define DEFAULT_PRINT_NUM 20            /* 每个打印头之间的间隔行 */
 
 /* 模块各项显示状态 */
 enum {

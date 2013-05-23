@@ -364,8 +364,38 @@ void get_mod_hdr(char *hdr, const struct module *mod) {
 
     for (i = 0; i < mod->n_col; i++) {
         if (mod->spec) {
+            if (SPEC_BIT == info[i].summary_bit) {
+                if (strlen(info[i].hdr) > 6) {
+                    info[i].hdr[6] = '\0';
+                }
+                pos += sprintf(hdr + pos, "%s%s", info[i].hdr, PRINT_DATA_SPLIT);
+            }
         } else {
+            if (((DATA_SUMMARY == conf.print_mode) && (SUMMARY_BIT == info[i].summary_bit))
+                    || ((DATA_DETAIL == conf.print_mode) && (HIDE_BIT != info[i].summary_bit))) {
+                if (strlen(info[i].hdr) > 6) {
+                    info[i].hdr[6] = '\0';
+                }
+                pos += sprintf(hdr + pos, "%s%s", info[i].hdr, PRINT_DATA_SPLIT);
+            }
         }
+    }
+}
+
+/* adjust print opt line */
+void adjust_print_opt_line(char *n_opt_line, const char *opt_line, int hdr_len) {
+    int pad_len;
+    char pad[LEN_128] = {0};
+
+    if (hdr_len > strlen(opt_line)) {
+        pad_len = (hdr_len - strlen(opt_line)) / 2;
+        memset(pad, '-', pad_len);
+        strcat(n_opt_line, pad);
+        strcat(n_opt_line, opt_line);
+        memset(&pad, '-', hdr_len - pad_len - strlen(opt_line));
+        strcat(n_opt_line, pad);
+    } else {    /* opt line 以 模块所有hdr长度为准 */
+        strncat(n_opt_line, opt_line, hdr_len);
     }
 }
 
@@ -375,9 +405,13 @@ void print_header(void) {
     struct module *mod;
     char opt_line[LEN_10240] = {0};
     char hdr_line[LEN_10240] = {0};
-    char n_opt[LEN_256] = {0};
     char mod_hdr[LEN_256] = {0};
+    char *token, *s_token, *n_record;
+    char opt[LEN_128] = {0};
+    char n_opt[LEN_256] = {0};
+    char header[LEN_10240] = {0};
 
+    /* get time */
     if (conf.print_mode == RUN_PRINT_LIVE) {
         sprintf(opt_line, "Time             %s", PRINT_SEC_SPLIT);
         sprintf(hdr_line, "Time             %s", PRINT_SEC_SPLIT);
@@ -394,13 +428,79 @@ void print_header(void) {
 
         memset(n_opt, 0, sizeof(n_opt));
         memset(mod_hdr, 0, sizeof(mod_hdr));
+        /* get hdr */
         get_mod_hdr(mod_hdr, mod);
+
+        /* 多项模块 */
+        if (strstr(mod->record, ITEM_SPLIT) && MERGE_NOT == conf.print_merge) {
+            n_record = strdup(mod->record);
+            token = strtok(n_record, ITEM_SPLIT);
+            int count = 0;
+            while (token) {
+                s_token = strstr(token, ITEM_SPSTART);
+                if (s_token) {
+                    memset(opt, 0, sizeof(opt));
+                    memset(n_opt, 0, sizeof(n_opt));
+                    strncat(opt, token, s_token - token);
+                    if (*mod->print_item != 0 && strcmp(mod->print_item, opt)) {
+                        /* 指定了列, 但模块里没找到 */
+                        token = strtok(NULL, ITEM_SPLIT);
+                        count++;
+                        continue;
+                    }
+
+                    /* 位操作 */
+                    mod->p_item |= (1 << count);
+                    adjust_print_opt_line(n_opt, opt, strlen(mod_hdr));
+                    strcat(opt_line, n_opt);
+                    strcat(opt_line, PRINT_SEC_SPLIT);
+                    strcat(hdr_line, mod_hdr);
+                    strcat(hdr_line, PRINT_SEC_SPLIT);
+                }
+                token = strtok(NULL, ITEM_SPLIT);
+                count++;
+            }
+            free(n_record);
+            n_record = NULL;
+        } else {        /* 单项模块 */
+            memset(opt, 0, sizeof(opt));
+            /*set print opt line, opt_line不够长补- */
+            adjust_print_opt_line(opt, mod->opt_line, strlen(mod_hdr));
+            /*set print hdr line */
+            strcat(hdr_line, mod_hdr);
+            strcat(opt_line, opt);
+        }
+
+        strcat(hdr_line, PRINT_SEC_SPLIT);
+        strcat(opt_line, PRINT_SEC_SPLIT);
     }
+
+    sprintf(header, "%s\n%s\n", opt_line, hdr_line);
+    printf("%s", header);
 }
 
 /* set record time */
 long set_record_time(const char *line) {
-    printf("%s\n", line);
+    char *token, s_time[LEN_32] = {0};
+    static long pre_time, c_time = 0;
+
+    /* get record time */
+    token = strstr(line, SECTION_SPLIT);
+    memcpy(s_time, line, token - line);
+
+    /* swap time */
+    pre_time = c_time;
+    c_time = atol(s_time);
+
+    c_time = c_time - c_time % 60;
+    pre_time = pre_time - pre_time % 60;
+
+    /* 得到的记录时间不能为0 */
+    if (!(conf.print_interval = c_time - pre_time)) {
+        return 0;
+    } else {
+        return c_time;
+    }
 }
 
 /* 初始化打印界面 */
@@ -495,10 +595,175 @@ FILE *init_running_print(void) {
     return fp;
 }
 
+/* 检验时间的正确性 */
+int check_time(const char *line) {
+    char *token, s_time[LEN_32] = {0};
+    long now_time;
+    static long pre_time;
+
+    /* get record time */
+    token = strstr(line, SECTION_SPLIT);
+    memcpy(s_time, line, token - line);
+    now_time = atol(s_time);
+
+    /* 超过打印终止时间 */
+    if (now_time >= conf.print_end_time) {
+        return 3;
+    }
+
+    now_time = now_time - now_time % 60;
+    if (!((now_time - conf.print_start_time) % (60 * conf.print_nline_interval)) && (now_time > pre_time)) {
+        if (pre_time && (now_time - pre_time == (conf.print_nline_interval * 60))) {
+            pre_time = now_time;
+            return 0;
+        }
+
+        pre_time = now_time;
+        return 1;
+    } else {
+        return 1;
+    }
+}
+
+/* print record time */
+void print_record_time(long c_time) {
+    char s_time[LEN_32] = {0};
+    struct tm *t;
+
+    t = localtime(&c_time);
+    strftime(s_time, sizeof(s_time), "%d/%m/%y-%R", t);
+    printf("%s%s", s_time, PRINT_SEC_SPLIT);
+}
+
+/* 打印各列数据 */
+void print_array_stat(struct module *mod, const double *st_array) {
+}
+
+/* print record */
+void print_record(void) {
+    int i, j;
+    double *st_array;
+    struct module *mod;
+
+    for (i = 0; i < statis.total_mod_num; i++) {
+        mod = &mods[i];
+        if (!mod->enable) {
+            continue;
+        }
+
+        if (!mod->n_item) {
+            printf("module no item\n");
+            print_array_stat(mod, NULL);
+            printf("%s", PRINT_SEC_SPLIT);
+        } else {
+            for (j = 0; j < mod->n_item; j++) {
+                if (*mod->print_item != 0 && ((mod->p_item & (1 << j)) == 0)) {
+                    continue;
+                }
+
+                st_array = &mod->st_array[j * mod->n_col];
+                print_array_stat(mod, st_array);
+                printf("%s", PRINT_SEC_SPLIT);
+            }
+
+            /* 多项目模块 */
+            if (mod->n_item > 1) {
+                printf("%s", PRINT_SEC_SPLIT);
+            }
+        }
+    }
+    printf("\n");
+}
+
 /* 显示日志文件信息 */
 void running_print(void) {
     FILE *fp;
+    long n_record = 0, s_time;
+    char line[LEN_10240] = {0};
+    char filename[LEN_128] = {0};
+    int print_num = 1, re_p_hdr = 0;
 
     /* 初始化打印界面 */
     fp = init_running_print();
+
+    /* 整理数据 */
+    if (collect_record_stat() == 0) {
+        do_debug(LOG_INFO, "collect_record_stat warn\n");
+    }
+
+    while (1) {
+        if (!fgets(line, LEN_10240, fp)) {
+            if (conf.print_file_number <= 0) {
+                break;
+            } else {
+                conf.print_file_number = conf.print_file_number - 1;
+                memset(filename, 0, sizeof(filename));
+                /* change log file */
+                if (conf.print_file_number == 0) {
+                    sprintf(filename, "%s", conf.output_file_path);
+                } else {
+                    sprintf(filename, "%s.%d", conf.output_file_path, conf.print_file_number);
+                }
+                /* close file */
+                if (fclose(fp) < 0) {
+                    do_debug(LOG_FATAL, "fclose error: %s", strerror(errno));
+                }
+                /* open file */
+                if (!(fp = fopen(filename, "r"))) {
+                    do_debug(LOG_FATAL, "unable to open the log file %s.\n", filename);
+                }
+                continue;
+            }
+        }
+
+        /* check time, 检查开始时间与记录时间 */
+        int k = check_time(line);
+        if (k == 1) {
+            continue;
+        }
+        if (k == 3) {
+            break;
+        }
+
+        /* read one line to module */
+        read_line_to_module_record(line);
+
+        /* Every DEFAULT_CONF_FILE will print the header */
+        if (!(print_num % DEFAULT_PRINT_NUM) || re_p_hdr) {
+            print_header();
+            re_p_hdr = 0;
+            print_num = 1;
+        }
+
+        /* two record have same time */
+        if (!(s_time = set_record_time(line))) {
+            continue;
+        }
+
+        /* 模块项目数改变, 重新打印header
+         * 分配尾数据
+         */
+        /*
+        if (!collect_record_stat()) {
+            re_p_hdr = 1;
+            continue;
+        }
+        */
+
+        /* print record time */
+        print_record_time(s_time);
+        
+        /* print record */
+        print_record();
+       
+    }
+
+    if (n_record) {
+    }
+
+    /* close file */
+    if (fclose(fp) < 0) {
+        do_debug(LOG_FATAL, "fclose error: %s", strerror(errno));
+    }
+    fp = NULL;
 }
