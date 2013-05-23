@@ -89,4 +89,12 @@ enum {
     MERGE_AVG           /* 记录平均值 */
 };
 
+/* 模块打印尾 */
+enum {
+    TAIL_NULL,          /* 无 */
+    TAIL_MAX,           /* 最大 */
+    TAIL_MEAN,          /* 中间 */
+    TAIL_MIN            /* 最小 */
+};
+
 #endif

@@ -625,6 +625,31 @@ int check_time(const char *line) {
     }
 }
 
+/* print result */
+void printf_result(double result) {
+    if (conf.print_detail) {
+        printf("%6.2f", result);
+        printf("%s", PRINT_DATA_SPLIT);
+        return;
+    }
+    if ((1000 - result) > 0.1) {
+        printf("%6.2f", result);
+
+    } else if ( (1000 - result / 1024) > 0.1) {
+        printf("%5.1f%s", result / 1024, "K");
+
+    } else if ((1000 - result / 1024 / 1024) > 0.1) {
+        printf("%5.1f%s", result / 1024 / 1024, "M");
+
+    } else if ((1000 - result / 1024 / 1024 / 1024) > 0.1) {
+        printf("%5.1f%s", result / 1024 / 1024 / 1024, "G");
+
+    } else if ((1000 - result / 1024 / 1024 / 1024 / 1024) > 0.1) {
+        printf("%5.1f%s", result / 1024 / 1024 / 1024 / 1024, "T");
+    }
+    printf("%s", PRINT_DATA_SPLIT);
+}
+
 /* print record time */
 void print_record_time(long c_time) {
     char s_time[LEN_32] = {0};
@@ -637,6 +662,43 @@ void print_record_time(long c_time) {
 
 /* 打印各列数据 */
 void print_array_stat(struct module *mod, const double *st_array) {
+    int i;
+    struct mod_info *info = mod->info;
+
+    for (i = 0; i < mod->n_col; i++) {
+        if (mod->spec) {
+            /* no data */
+            if (!st_array || !mod->st_flag || st_array[i] < 0) {
+                /* spec module no data */
+                if (((DATA_SUMMARY == conf.print_mode) && (SPEC_BIT == info[i].summary_bit))
+                        || ((DATA_DETAIL == conf.print_mode) && (SPEC_BIT == info[i].summary_bit))) {
+                    printf("------%s", PRINT_DATA_SPLIT);
+                }
+            } else {
+                /* print record */
+                if (((DATA_SUMMARY == conf.print_mode) && (SPEC_BIT == info[i].summary_bit))
+                        || ((DATA_DETAIL == conf.print_mode) && (SPEC_BIT == info[i].summary_bit))) {
+                    /* print result */
+                    printf_result(st_array[i]);
+                }
+            }
+        } else {
+            /* no data */
+            if (!st_array || !mod->st_flag || st_array[i] < 0) {
+                /* module no data */
+                if (((DATA_SUMMARY == conf.print_mode) && (SUMMARY_BIT == info[i].summary_bit))
+                        || ((DATA_DETAIL == conf.print_mode) && (HIDE_BIT != info[i].summary_bit))) {
+                    printf("------%s", PRINT_DATA_SPLIT);
+                }
+            } else {
+                if (((DATA_SUMMARY == conf.print_mode) && (SUMMARY_BIT == info[i].summary_bit))
+                        || ((DATA_DETAIL == conf.print_mode) && (HIDE_BIT != info[i].summary_bit))) {
+                    /* print result */
+                    printf_result(st_array[i]);
+                }
+            }
+        }
+    }
 }
 
 /* print record */
@@ -672,6 +734,86 @@ void print_record(void) {
             }
         }
     }
+    printf("\n");
+}
+
+/* 打印尾 */
+void print_tail(int tail_type) {
+    int i, j, k;
+    struct module *mod = NULL;
+    double *m_tail;
+
+    switch (tail_type) {
+        case TAIL_MAX:
+            printf("MAX           %s", PRINT_SEC_SPLIT);
+            break;
+        case TAIL_MEAN:
+            printf("MEAN          %s", PRINT_SEC_SPLIT);
+            break;
+        case TAIL_MIN:
+            printf("MIN           %s", PRINT_SEC_SPLIT);
+            break;
+        default:
+            return;
+    }
+
+    for (i = 0; i < statis.total_mod_num; i++) {
+        mod = &mods[i];
+        if (!mod->enable) {
+            continue;
+        }
+
+        switch (tail_type) {
+            case TAIL_MAX:
+                m_tail = mod->max_array;
+                break;
+            case TAIL_MEAN:
+                m_tail = mod->mean_array;
+                break;
+            case TAIL_MIN:
+                m_tail = mod->min_array;
+                break;
+            default:
+                return;
+        }
+
+        k = 0;
+        for (j = 0; j < mod->n_item; j++) {
+            if (*mod->print_item != 0 && ((mod->p_item & (1 << j)) == 0)) {
+                k += mod->n_col;
+                continue;
+            }
+
+            struct mod_info *info = mod->info;
+            for (i = 0; i < mod->n_col; i++) {
+                if (mod->spec) {
+                    /* print record */
+                    if (((DATA_SUMMARY == conf.print_mode) && (SPEC_BIT == info[i].summary_bit))
+                            || ((DATA_DETAIL == conf.print_mode) && (SPEC_BIT == info[i].summary_bit))) {
+                        /* print result */
+                        printf_result(m_tail[k]);
+                    }
+                } else {
+                    if (((DATA_SUMMARY == conf.print_mode) && (SUMMARY_BIT == info[i].summary_bit))
+                            || ((DATA_DETAIL == conf.print_mode) && (HIDE_BIT != info[i].summary_bit))) {
+                        /* print result */
+                        printf_result(m_tail[k]);
+                    }
+                }
+                k++;
+            }
+
+            printf("%s", PRINT_SEC_SPLIT);
+        }
+
+        if (mod->n_item != 1) {
+            if (!m_tail) {
+                print_array_stat(mod, NULL);
+            }
+            printf("%s", PRINT_SEC_SPLIT);
+        }
+    }
+
     printf("\n");
 }
 
@@ -743,22 +885,25 @@ void running_print(void) {
         /* 模块项目数改变, 重新打印header
          * 分配尾数据
          */
-        /*
         if (!collect_record_stat()) {
             re_p_hdr = 1;
             continue;
         }
-        */
 
         /* print record time */
         print_record_time(s_time);
-        
         /* print record */
         print_record();
-       
+        n_record++;
+        print_num++;
+        memset(line, 0, sizeof(line));
     }
 
     if (n_record) {
+        printf("\n");
+        print_tail(TAIL_MAX);
+        print_tail(TAIL_MEAN);
+        print_tail(TAIL_MIN);
     }
 
     /* close file */

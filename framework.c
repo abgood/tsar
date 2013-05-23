@@ -144,7 +144,7 @@ void read_line_to_module_record(char *line) {
 /* 开辟相关模块内存空间并初始化 */
 void init_module_fields(void) {
     int i;
-    struct module *mod;
+    struct module *mod = NULL;
 
     /* 根据每个模块分配内存空间 */
     for (i = 0; i < statis.total_mod_num; i++) {
@@ -168,7 +168,7 @@ void init_module_fields(void) {
             if (conf.print_tail) {
                 mod->max_array = (double *)calloc(mod->n_item * mod->n_col, sizeof(double));
                 mod->mean_array = (double *)calloc(mod->n_item * mod->n_col, sizeof(double));
-                mod->mean_array = (double *)calloc(mod->n_item * mod->n_col, sizeof(double));
+                mod->min_array = (double *)calloc(mod->n_item * mod->n_col, sizeof(double));
             }
         }
     }
@@ -230,7 +230,6 @@ void set_st_record(struct module *mod) {
                 if (0 == mod->n_record) {
                     mod->max_array[k] = mod->mean_array[k] = mod->min_array[k] = mod->st_array[k] * 1.0;
                 } else {
-                    printf("%f\n", mod->mean_array[k]);
                     /* bigger than max */
                     if (mod->st_array[k] - mod->max_array[k] > 0.1) {
                         mod->max_array[k] = mod->st_array[k];
