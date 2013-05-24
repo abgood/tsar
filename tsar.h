@@ -18,6 +18,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <openssl/aes.h>
 
 #include "define.h"
 #include "config.h"
@@ -29,6 +30,7 @@
 #include "output_nagios.h"
 #include "output_print.h"
 #include "enc_dec.h"
+#include "aes_code.h"
 
 struct statistic {
     int total_mod_num;      /* 启用模块数量 */

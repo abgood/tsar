@@ -24,6 +24,8 @@ const struct option longopts[] = {
     { "item", required_argument, NULL, 'I' },
     { "encry", required_argument, NULL, 'e' },
     { "decry", required_argument, NULL, 'j' },
+    { "aesenc", required_argument, NULL, 'a' },
+    { "aesdec", required_argument, NULL, 'x' },
     { "help", no_argument, NULL, 'h' },
     { 0, 0, 0, 0},
 };
@@ -48,8 +50,10 @@ void usage(void) {
             "    --detail/-D    do not conver data to K/M/G\n"
             "    --spec/-s      show spec field data, tsar --cpu -s sys,util\n"
             "    --item/-I      show spec item data, tsar --io -I sda\n"
-            "    --encry/-e     encrypt the string, tsar -e <string> \n"
-            "    --decry/-j     decrypt the string, tsar -j <string> \n"
+            "    --encry/-e     DES encrypt the string, tsar -e <string> \n"
+            "    --decry/-j     DES decrypt the string, tsar -j <string> \n"
+            "    --aesenc/-a    AES encrypt the string, tsar -a <string> \n"
+            "    --aesdec/-x    AES decrypt the string, tsar -x <string> \n"
             "    --help/-h      help\n");
 
     fprintf(stderr,
@@ -71,7 +75,7 @@ void usage(void) {
 static void main_init(int argc, char **argv) {
     int opt, oind = 0;
 
-    while ((opt = getopt_long(argc, argv, ":cCi:Llf:n:d:s:I:e:j:mhD", longopts, NULL)) != -1) {
+    while ((opt = getopt_long(argc, argv, ":cCi:Llf:n:d:s:I:e:j:a:x:mhD", longopts, NULL)) != -1) {
         oind++;
         switch (opt) {
             case 'c':       /* 计划任务 */
@@ -113,11 +117,21 @@ static void main_init(int argc, char **argv) {
             case 'D':       /* conver data to K/M/G */
                 conf.print_detail = TRUE;
                 break;
-            case 'e':       /* 加密字符串 */
+            case 'e':       /* DES加密字符串 */
+                conf.running_mode = RUN_ENCRY;
                 enc_code(optarg);
                 break;
-            case 'j':       /* 解密字符串 */
+            case 'j':       /* DES解密字符串 */
+                conf.running_mode = RUN_ENCRY;
                 dec_code(optarg, 1);
+                break;
+            case 'a':       /* AES加密字符串 */
+                conf.running_mode = RUN_ENCRY;
+                aes_enc(optarg);
+                break;
+            case 'x':       /* AES解密字符串 */
+                conf.running_mode = RUN_ENCRY;
+                aes_dec(optarg, 1);
                 break;
             case 'h':       /* tsar帮助 */
                 usage();

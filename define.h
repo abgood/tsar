@@ -65,7 +65,8 @@ enum {
     RUN_CRON,           /* 计划任务运行 */
     RUN_CHECK_NEW,      /* 检查运行 */
     RUN_PRINT,          /* 打印运行 */
-    RUN_PRINT_LIVE      /* 实时打印运行 */
+    RUN_PRINT_LIVE,     /* 实时打印运行 */
+    RUN_ENCRY           /* 加密解模式 */
 };               
                 
 /* 模块内的多项目合并模式 */

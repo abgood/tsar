@@ -15,7 +15,10 @@ int query_mysql(char *db_addr, const char *sql) {
     mysql_init(&mysql);
 
     // 解密DB密码
-    db_pawd = dec_code(conf.output_db_pawd, 0);
+    /* DES模式 */
+    // db_pawd = dec_code(conf.output_db_pawd, 0);
+    /* AES模式 */
+    db_pawd = aes_dec(conf.output_db_pawd, 0);
 
     // 连接mysql
     if ((conn = mysql_real_connect(&mysql, ip, "root", db_pawd, "tsar", port, NULL, 0)) == NULL) {
