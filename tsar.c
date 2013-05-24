@@ -195,6 +195,15 @@ void running_cron(void) {
         output_nagios();
 }
 
+/* 释放内存 */
+void shut_down(void) {
+    free_modules();
+
+    memset(&conf, 0, sizeof(struct configure));
+    memset(&mods, 0, sizeof(struct module) * MAX_MOD_NUM);
+    memset(&statis, 0, sizeof(struct statistic));
+}
+
 int main (int argc, char **argv) {
     /* 解析tsar配置文件 */
     parse_config_file(DEFAULT_CONF_FILE);
@@ -250,7 +259,11 @@ int main (int argc, char **argv) {
             /* show log file info */
             running_print_live();
             break;
+        default:
+            break;
     }
+
+    shut_down();
 
     return 0;
 }

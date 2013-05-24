@@ -71,4 +71,7 @@ int collect_record_stat(void);
 /* 取消列数为0的模块 */
 void disable_col_zero(void);
 
+/* 释放模块信息 */
+void free_modules(void);
+
 #endif
