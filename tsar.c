@@ -241,6 +241,15 @@ int main (int argc, char **argv) {
             /* show log file info */
             running_print();
             break;
+        case RUN_PRINT_LIVE:    /* -l */
+            /* reload module by output_stdio_mod and output_print_mod */
+            reload_modules(conf.output_stdio_mod);
+            reload_modules(conf.output_print_mod);
+            /* disable module when n_col is zero */
+            disable_col_zero();
+            /* show log file info */
+            running_print_live();
+            break;
     }
 
     return 0;

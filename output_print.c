@@ -912,3 +912,65 @@ void running_print(void) {
     }
     fp = NULL;
 }
+
+/* print current time */
+void print_current_time(void) {
+    char cur_time[LEN_32] = {0};
+    time_t timep;
+    struct tm *t;
+
+    time(&timep);
+    t = localtime(&timep);
+    if (conf.print_mode == RUN_PRINT_LIVE) {
+        strftime(cur_time, sizeof(cur_time), "%d/%m/%y-%T", t);
+    } else {
+        strftime(cur_time, sizeof(cur_time), "%d/%m/%y-%R", t);
+    }
+
+    printf("%s%s", cur_time, PRINT_SEC_SPLIT);
+}
+
+/* 实时打印记录 */
+void running_print_live(void) {
+    int print_num = 1, re_p_hdr = 0;
+
+    /* collect data */
+    collect_record();
+
+    /* print header */
+    print_header();
+
+    init_module_fields();
+
+    /* process data */
+    if (collect_record_stat() == 0) {
+        do_debug(LOG_FATAL, "collect_record_stat warn\n");
+    }
+
+    /* sleep N seconds */
+    sleep(conf.print_interval);
+
+    /* print live record */
+    while (1) {
+        collect_record();
+
+        /* reprint header */
+        if (!(print_num % DEFAULT_PRINT_NUM) || re_p_hdr) {
+            print_header();
+            re_p_hdr = 0;
+            print_num = 1;
+        }
+
+        if (!collect_record_stat()) {
+            re_p_hdr = 1;
+            continue;
+        }
+
+        /* print current time */
+        print_current_time();
+        print_record();
+
+        print_num++;
+        sleep(conf.print_interval);
+    }
+}
