@@ -204,7 +204,7 @@ void realloc_module_array(struct module *mod, int n_n_item) {
 /* 把cur_array与pre_array设置到st_array */
 void set_st_record(struct module *mod) {
     int i, j, k = 0;
-    // struct mod_info *info = mod->info;
+    struct mod_info *info = mod->info;
     mod->st_flag = 1;
 
     /* 模块每项 */
@@ -222,7 +222,24 @@ void set_st_record(struct module *mod) {
         for (j = 0; j < mod->n_col; j++) {
             /* 没有set record */
             if (!mod->set_st_record) {
-                printf("have not set_st_record\n");
+                /* not set_st_record in module */
+                switch (info[j].stats_opt) {
+                    case STATS_SUB:
+                        printf("STATS_SUB\n");
+                        break;
+                    case STATS_SUB_INTER:
+                        if (mod->cur_array[k] < mod->pre_array[k]) {
+                            mod->pre_array[k] = mod->cur_array[k];
+                            mod->st_flag = 0;
+                        } else {
+                            mod->st_array[k] = (mod->cur_array[k] - mod->pre_array[k]) / conf.print_interval;
+                        }
+                        break;
+                    default:
+                        mod->st_array[k] = mod->cur_array[k];
+                }
+
+                mod->st_array[k] *= 1.0;
             }
 
             /* 打印每列的尾部 */
