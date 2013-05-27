@@ -7,6 +7,7 @@
 #define STAT "/proc/stat"               /* cpu信息文件 */
 #define MEMINFO "/proc/meminfo"         /* mem信息文件 */
 #define VMSTAT "/proc/vmstat"           /* swap信息文件 */
+#define IO_FILE "/proc/diskstats"       /* io信息文件 */
 
 /* 类型长度 */
 #define U_64 unsigned long long
@@ -40,6 +41,7 @@
 /* 最大限制数 */
 #define MAX_COL_NUM 64  /* 模块最大列数 */
 #define MAX_MOD_NUM 32  /* 最多模块数 */
+#define MAX_PARTITIONS 16   /* 最多磁盘数 */
 
 /* 默认打印值 */
 #define DEFAULT_PRINT_INTERVAL 5        /* 默认打印间隔秒 */
