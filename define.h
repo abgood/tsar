@@ -6,6 +6,7 @@
 #define DEFAULT_CONF_FILE_PATH "tsar.conf"      /* tsar默认配置文件地址 */
 #define STAT "/proc/stat"               /* cpu信息文件 */
 #define MEMINFO "/proc/meminfo"         /* mem信息文件 */
+#define VMSTAT "/proc/vmstat"           /* swap信息文件 */
 
 /* 类型长度 */
 #define U_64 unsigned long long
