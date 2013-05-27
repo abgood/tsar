@@ -242,7 +242,7 @@ int find_offset_from_start(FILE *fp, int number) {
     memset(&line, 0, LEN_10240);
     /* read one line */
     if (!fgets(line, LEN_10240, fp)) {
-        do_debug(LOG_FATAL, "fgets error: %s", strerror(errno));
+        do_debug(LOG_FATAL, "fgets error: %s\n", strerror(errno));
     }
     line_len = strlen(line);
 
@@ -294,12 +294,12 @@ int find_offset_from_start(FILE *fp, int number) {
         }
         /* read one line */
         if (!fgets(line, LEN_10240, fp)) {
-            do_debug(LOG_FATAL, "fgets error: %s", strerror(errno));
+            do_debug(LOG_FATAL, "fgets error: %s\n", strerror(errno));
         }
         memset(&line, 0, LEN_10240);
         /* read one line again */
         if (!fgets(line, LEN_10240, fp)) {
-            do_debug(LOG_FATAL, "fgets error: %s", strerror(errno));
+            do_debug(LOG_FATAL, "fgets error: %s\n", strerror(errno));
         }
         if (0 != line[0] && offset > line_len) {
             p_sec_token = strstr(line, SECTION_SPLIT);
