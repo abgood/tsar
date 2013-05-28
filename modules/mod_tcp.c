@@ -30,6 +30,8 @@ static void read_tcp_stats(struct module *mod) {
     int sw = FALSE;
     struct stats_tcp st_tcp;
 
+    memset(&st_tcp, 0, sizeof(struct stats_tcp));
+
     if (!(fp = fopen(NET_SNMP, "r"))) {
         return;
     }
