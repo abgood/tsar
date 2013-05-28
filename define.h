@@ -10,6 +10,7 @@
 #define IO_FILE "/proc/diskstats"       /* io信息文件 */
 #define NET_SNMP "/proc/net/snmp"       /* tcp信息文件 */
 #define NET_DEV "/proc/net/dev"         /* traffic信息文件 */
+#define LOADAVG "/proc/loadavg"         /* load信息文件 */
 
 /* 类型长度 */
 #define U_64 unsigned long long
