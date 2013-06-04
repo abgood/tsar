@@ -5,7 +5,7 @@ create table data_collect (
     cpu varchar(200) not null default '',
     mem varchar(200) not null default '',
     swap varchar(200) not null default '',
-    partition varchar(200) not null default '',
+    partion varchar(200) not null default '',
     tcp varchar(200) not null default '',
     udp varchar(200) not null default '',
     traffic varchar(200) not null default '',
